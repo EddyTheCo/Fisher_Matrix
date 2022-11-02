@@ -39,7 +39,6 @@ target_link_libraries(Fisher_Matrix PUBLIC  ${TBB_IMPORTED_TARGETS} oneDPL)
 
 install(TARGETS Fisher_Matrix EXPORT Fisher_MatrixTargets DESTINATION lib)
 install(DIRECTORY include/ DESTINATION include/)
-install(DIRECTORY gnuplot DESTINATION .)
 
 install(EXPORT Fisher_MatrixTargets
 	FILE Fisher_MatrixTargets.cmake
