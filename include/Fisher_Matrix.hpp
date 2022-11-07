@@ -8,17 +8,15 @@
 
 #ifdef _DEBUG
 #define EXEC oneapi::dpl::execution::seq
+#define PRINTT(x,str) std::cout<<#x<<x.sizes()<<x.dtype()<<" = "<<str<<std::endl; \
+	//
 #else
 #define EXEC oneapi::dpl::execution::par_unseq
+#define PRINTT(x,str) //
 #endif
 
-#ifdef _DEBUG
-#define PRINTT(x,str) std::cout<<#x<<x.sizes()<<x.dtype()<<" = "<<str<<std::endl;
-#else
-#define PRINTT(x,str)
-#endif
 
-namespace statistical
+	namespace statistical
 {
 	std::vector<torch::Tensor> create_grads_out(const torch::Tensor &fl);
 	/**
@@ -46,7 +44,7 @@ namespace statistical
 
 
 
-			//PRINTT(flT,"Tensor(N_PARAM,N_DATA,SOUT)")
+			PRINTT(flT,"Tensor(N_PARAM,N_DATA,SOUT)");
 			/*fls(vector<Tensor(N_DATA,SOUT),N_PARAM>)*/
 
 
@@ -72,7 +70,7 @@ namespace statistical
 							std::for_each(EXEC,var.begin(),var.end(),[](auto &item){item=item.flatten();});
 							auto glued=torch::cat(var);
 
-							PRINTT(glued,"Tensor(D_PHI)")
+							PRINTT(glued,"Tensor(D_PHI)");
 
 
 							return glued;
@@ -80,7 +78,7 @@ namespace statistical
 					/*gra(Vector<Tensor(D_PHI),N_DATA*SOUT>)*/
 					auto linked=torch::stack(gra,0).reshape({N_DATA,(int64_t)gra.size()/N_DATA,gra.front().size(0)});
 
-					//PRINTT(linked,"Tensor(N_DATA,SOUT,D_PHI)")
+					PRINTT(linked,"Tensor(N_DATA,SOUT,D_PHI)");
 
 
 
@@ -89,13 +87,14 @@ namespace statistical
 			/*dlpi(Vector<Tensor(N_DATA,SOUT,D_PHI),N_PARAM>)*/
 			auto dlpiT=torch::stack(dlpi,0);
 
-			//PRINTT(dlpiT,"Tensor(N_PARAM,N_DATA,SOUT,D_PHI)")
+			PRINTT(dlpiT,"Tensor(N_PARAM,N_DATA,SOUT,D_PHI)");
 
+			PRINTT(flT,"Tensor(N_PARAM,N_DATA,SOUT)");
 
 			auto ddlpiT=torch::einsum("abcd,abce -> abcde",{dlpiT,dlpiT});
 			auto Fisher_Matrix=torch::einsum("abcde,abc -> ade",{ddlpiT,flT})/N_DATA;
 
-			//PRINTT(Fisher_Matrix,"Tensor(N_PARAM,D_PHI,D_PHI)")
+			PRINTT(Fisher_Matrix,"Tensor(N_PARAM,D_PHI,D_PHI)");
 
 			return Fisher_Matrix;
 			/*Fisher_Matrix(Tensor(N_PARAM,D_PHI,D_PHI))*/
