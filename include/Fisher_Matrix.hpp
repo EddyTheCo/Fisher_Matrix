@@ -29,7 +29,6 @@
 		torch::Tensor	get_Fisher_Matrix(std::vector<Contained> &models,
 				std::vector<torch::Tensor> &xs)
 		{
-			const auto D_PHI= models.front()->parameters().size();
 			const auto N_PARAM=models.size();
 			const auto N_DATA=xs.front().size(0);
 
